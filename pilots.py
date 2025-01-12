@@ -37,7 +37,7 @@ def check_password():
 
 if check_password():
 
-    my_js_gpt = """
-    <elevenlabs-convai agent-id="leimLLc4N1UIKJ5640rU"></elevenlabs-convai><script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
+    my_js_gpt = f"""
+    <elevenlabs-convai agent-id="{st.secrets['agent_id']}"></elevenlabs-convai><script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
     """
     html(my_js_gpt)
