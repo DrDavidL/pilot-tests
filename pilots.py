@@ -1,9 +1,8 @@
 import streamlit as st
 from streamlit.components.v1 import html
-
+import requests
 import streamlit as st
 
-import streamlit as st
 
 def check_password():
     """Returns `True` if the user has entered the correct password."""
@@ -61,3 +60,52 @@ if check_password():
         <elevenlabs-convai agent-id="{st.secrets['agent_id']}"></elevenlabs-convai><script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
         """
         html(my_js_gpt)
+        
+
+
+
+        # Define custom configuration for the new agent
+        API_KEY = st.secrets["elevenlabs_api_key"]
+        CREATE_AGENT_URL = "https://api.elevenlabs.io/v1/convai/agents/create"
+
+        headers = {
+            "xi-api-key": API_KEY,
+            "Content-Type": "application/json"
+        }
+
+        # Define custom configuration for the new agent
+        payload = {
+            "conversation_config": {
+                "agent": {
+                    "prompt": {
+                        "prompt": "You are a 45-year-old female with chest pain for 3 hours."
+                    },
+                    "first_message": "I don't feel well, can you please help me?",
+                    "language": "en"  # Use 'en' for English
+                },
+                "tts": {
+                    "voice_id": "iP95p4xoKVk53GoZ742B",
+                    "model_id": "eleven_turbo_v2"
+                },
+                "conversation": {
+                    "max_duration_seconds": 300  # Example: 5-minute conversation
+                }
+            },
+            "name": "TemporaryAgent"  # Optional: Name the agent for easy identification
+        }
+
+        # Make the API request to create the agent
+        response = requests.post(CREATE_AGENT_URL, json=payload, headers=headers)
+
+        if response.status_code == 200:
+            agent_data = response.json()
+            agent_id = agent_data["agent_id"]
+            st.success(f"Temporary agent created: {agent_id}")
+        else:
+            st.error(f"Failed to create agent: {response.status_code} - {response.text}")
+
+        widget_js = f"""
+            <elevenlabs-convai agent-id="{agent_id}"></elevenlabs-convai>
+            <script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
+            """
+        html(widget_js)
